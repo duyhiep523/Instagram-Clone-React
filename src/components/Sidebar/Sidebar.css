@@ -1,0 +1,130 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.logo-insta {
+  /* margin-top: 20px; */
+  margin-left: 10px;
+  font-family: "Cookie", cursive;
+  font-weight: 400;
+  font-size: 40px;
+  padding: 10px;
+  user-select: none;
+}
+.logo-insta a{
+text-decoration: none;
+color: white;
+}
+nav {
+  font-family: "Poppins", sans-serif;
+  width: 244px;
+  height: 100vh;
+  border-right: 1.5px solid #23272b;
+  background: #000000;
+  color: #f1f1f1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 60px;
+  z-index: 200;
+}
+@media (max-width: 700px) {
+  nav {
+    width: 60px;
+    min-width: 60px;
+  }
+}
+
+.sidebar {
+  margin-top: 26px;
+  padding: 5px;
+}
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  border-radius: 12px;
+  color: #f1f1f1;
+  position: relative;
+}
+.sidebar-item .sidebar-label {
+  transition: color 0.18s;
+}
+.sidebar-item .sidebar-icon {
+  font-size: 22px;
+  margin-right: 15px;
+  color: #fff;
+  transition: color 0.18s;
+}
+.sidebar-item:hover, .sidebar-item.active {
+  background: #000000;
+}
+.sidebar-item:hover .sidebar-label,
+.sidebar-item.active .sidebar-label {
+  color: #e1306c;
+}
+.sidebar-item:hover .sidebar-icon,
+.sidebar-item.active .sidebar-icon {
+  color: #e1306c;
+}
+
+@media (max-width: 700px) {
+  .sidebar-item .sidebar-label {
+    display: none;
+  }
+  .sidebar-item {
+    justify-content: center;
+    padding: 14px 0;
+  }
+  .sidebar {
+    padding: 0;
+  }
+}
+
+
+
+.sidebar-item.active {
+  background: #23272b;
+}
+
+
+
+.sidebar-item:hover {
+  background-color: #262626;
+  border-radius: 10px;
+}
+.sidebar-item:hover .sidebar-label,
+.sidebar-item.active .sidebar-label {
+  color: #e1306c !important;
+}
+.sidebar-item:hover svg,
+.sidebar-item.active svg {
+  color: #e1306c !important;
+}
+
+.sidebar-item svg {
+  font-size: 22px;
+  margin-right: 15px;
+  color: #fff;
+}
+
+.sidebar-item p {
+  font-size: 15px;
+  margin: 0;
+  /* font-weight: 600; */
+}
+
+.sidebar-item-more {
+  position: absolute;
+  width: 234px;
+  bottom: 10px;
+}

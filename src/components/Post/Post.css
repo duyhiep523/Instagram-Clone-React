@@ -1,0 +1,254 @@
+.instagram-post {
+  width: 476px;
+  border-bottom: 1px solid #b6b6b6;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  background-color: #000000;
+  border-radius: 3px;
+  overflow: hidden;
+
+}
+
+/* Header */
+.post__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.header__info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 10px;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.username {
+  font-weight: bold;
+  margin-right: 5px;
+  color: rgb(255, 255, 255);
+}
+
+.time {
+  color: #888;
+  font-size: 12px;
+}
+
+.header__options span {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Content */
+.post__content img {
+  width: 100%;
+  display: block;
+}
+
+.post__actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.actions__left {
+  display: flex;
+  align-items: center;
+}
+
+.action__item {
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px 10px 0 0;
+  transition: color 0.15s;
+}
+
+.action__item:hover {
+  color: #a9a9a9;
+}
+
+.carousel-media {
+  position: relative;
+}
+
+.heart {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 80px;
+  color: #e1306c;
+  text-shadow: 0 2px 12px #e1306c, 0 0 20px #fff;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.heart.show {
+  opacity: 1;
+}
+
+
+.carousel-btn {
+  background: rgba(0, 0, 0, 0.18);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.18s, color 0.18s;
+}
+
+.carousel-btn:hover {
+  background: rgba(0, 0, 0, 0.32);
+  color: #e1306c;
+}
+
+.carousel-btn {
+  background: rgba(0, 0, 0, 0.32);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+color: #fff;
+border: none;
+border-radius: 50%;
+width: 38px;
+height: 38px;
+font-size: 22px;
+display: flex;
+align-items: center;
+justify-content: center;
+cursor: pointer;
+transition: background 0.18s,
+color 0.18s;
+position: absolute;
+top: 50%;
+transform: translateY(-50%);
+}
+
+.carousel-btn:hover {
+  background: rgba(0, 0, 0, 0.55);
+  color: #e1306c;
+}
+
+.carousel-btn.left {
+  left: 10px;
+}
+
+.carousel-btn.right {
+  right: 10px;
+}
+
+/* Details */
+.post__details {
+  padding: 0 10px 0 10px;
+}
+
+.likes {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.caption {
+  display: flex;
+  align-items: baseline;
+}
+
+.caption .username {
+  margin-right: 5px;
+}
+
+.see-more {
+  color: #888;
+  cursor: pointer;
+}
+
+.view-all-comments {
+  color: #8e8e8e;
+  /* Màu xám nhạt */
+  font-size: 14px;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.view-all-comments:hover {
+  text-decoration: none;
+  /* Loại bỏ gạch chân mặc định khi hover (nếu có) */
+}
+
+.add-comment {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  padding-bottom: 10px;
+  /* Thêm chút khoảng cách phía dưới */
+}
+
+.add-comment input[type="text"] {
+  flex-grow: 1;
+  border: none;
+  background-color: transparent;
+  color: #c7c7c7;
+  padding: 8px 0;
+  outline: none;
+  font-size: 14px;
+}
+
+.add-comment input[type="text"]::placeholder {
+  color: #8e8e8e;
+  font-size: 14px;
+}
+
+.add-comment button {
+  background-color: transparent;
+  border: none;
+  color: #3797f0;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 8px 0 8px 10px;
+  cursor: pointer;
+  outline: none;
+}
+
+.add-comment button:disabled {
+  color: #8e8e8e;
+  cursor: not-allowed;
+}
+
+.add-comment .emoji-icon {
+  color: #b9b9b9;
+  font-size: 20px;
+  margin-left: 8px;
+  cursor: pointer;
+}

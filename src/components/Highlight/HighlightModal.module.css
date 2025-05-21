@@ -1,0 +1,113 @@
+.modalOverlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modalContent {
+  background: #18191a;
+  border-radius: 12px;
+  padding: 32px 24px 24px 24px;
+  min-width: 330px;
+  max-width: 90vw;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.22);
+  color: #f1f1f1;
+  position: relative;
+}
+h3 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  font-size: 20px;
+  color: #e1306c;
+  text-align: center;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+input {
+  padding: 7px 10px;
+  border-radius: 5px;
+  border: 1.5px solid #23272b;
+  background: #23272b;
+  color: #f1f1f1;
+  outline: none;
+  font-size: 15px;
+}
+input:focus {
+  border-color: #e1306c;
+}
+.storiesList {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 7px;
+}
+.storyItem {
+  position: relative;
+}
+.storyImg {
+  width: 46px;
+  height: 46px;
+  border-radius: 7px;
+  object-fit: cover;
+  border: 1.5px solid #e1306c;
+}
+.removeBtn {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  background: #ff5a5f;
+  border: none;
+  color: #fff;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.addStoryRow {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.addStoryBtn {
+  background: #e1306c;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: flex-end;
+}
+.saveBtn {
+  background: #e1306c;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 7px 16px;
+  cursor: pointer;
+  font-size: 15px;
+}
+.cancelBtn {
+  background: #23272b;
+  color: #f1f1f1;
+  border: none;
+  border-radius: 5px;
+  padding: 7px 16px;
+  cursor: pointer;
+  font-size: 15px;
+}

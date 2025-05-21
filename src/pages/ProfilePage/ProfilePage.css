@@ -1,0 +1,27 @@
+.app-container {
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* Cột trái và phải tự động kích thước, cột giữa chiếm phần còn lại */
+  grid-template-rows: 100vh; /* Chiều cao tối thiểu bằng chiều cao viewport */
+}
+
+.sidebar {
+  padding: 20px;
+}
+.main-left-homepage{
+    position: fixed;
+    width: 244px;
+}
+.main-content {
+  margin-left: 244px;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.main-right {
+
+}
+

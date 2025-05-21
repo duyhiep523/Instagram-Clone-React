@@ -1,0 +1,62 @@
+.right-sidebar {
+  width: 320px;
+  padding: 20px 10px;
+  font-family: Arial, sans-serif;
+  color: #fff;
+}
+
+.current-user,
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.avatars {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  margin-right: 12px;
+  object-fit: cover;
+}
+
+.username {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.fullname,
+.note {
+  font-size: 12px;
+  color: #888;
+}
+
+.switch-btn,
+.follow-btn {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: bold;
+  color: #0095f6;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.suggestions-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.suggestions-header a {
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer {
+  font-size: 11px;
+  color: #666;
+  margin-top: 20px;
+  line-height: 1.6;
+}

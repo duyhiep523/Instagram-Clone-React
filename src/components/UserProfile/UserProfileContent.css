@@ -1,0 +1,57 @@
+.profile-posts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 3px;
+  margin-top: 20px;
+}
+
+.post-item {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  position: relative; /* Để định vị lớp phủ tuyệt đối bên trong */
+}
+
+.post-item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease; /* Hiệu ứng mờ khi hover */
+}
+
+.post-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); /* Nền đen mờ */
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0; /* Ban đầu ẩn lớp phủ */
+  transition: opacity 0.3s ease; /* Hiệu ứng hiển thị khi hover */
+  z-index: 1; /* Đảm bảo lớp phủ nằm trên ảnh */
+}
+
+.post-item:hover .post-overlay {
+  opacity: 1; /* Hiển thị lớp phủ khi hover */
+}
+
+.post-item:hover img {
+  opacity: 0.8; /* Làm mờ ảnh khi hover */
+}
+
+.overlay-info {
+  display: flex;
+  align-items: center;
+  margin: 0 15px;
+  font-weight: bold;
+}
+
+.overlay-info i {
+  margin-right: 5px;
+}

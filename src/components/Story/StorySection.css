@@ -1,0 +1,30 @@
+.story-viewer-container {
+  position: relative;
+  width: 400px;
+  height: 90vh; /* Hoặc chiều cao bạn muốn */
+  background-color: black; /* Màu nền đen như story */
+}.story-header {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+.story-header .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.story-header .username {
+  font-weight: bold;
+}
+
+.story-header .time {
+  font-size: 12px;
+  opacity: 0.8;
+}
