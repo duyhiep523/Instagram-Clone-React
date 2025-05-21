@@ -10,20 +10,34 @@ import { faUserTag } from "@fortawesome/free-solid-svg-icons"; // Sử dụng ic
 import { Plus } from "react-feather";
 import HighlightFriend from "../Highlight/HighlightFriend";
 import HighlightList from "../Highlight/HighlightList";
-import { getUserByUsername } from "../../services/userService";
+import { getUserByUsername, getPostCountByUserId } from "../../services/userService";
 
 
 function UserProfile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [postCount, setPostCount] = useState(0);
   const username = localStorage.getItem("username");
 
   useEffect(() => {
     if (!username) return;
     setLoading(true);
     getUserByUsername(username)
-      .then(data => setUser(data))
-      .catch(() => setUser(null))
+      .then(async (data) => {
+        setUser(data);
+        if (data && data.userId) {
+          try {
+            const count = await getPostCountByUserId(data.userId);
+            setPostCount(count);
+          } catch (e) {
+            setPostCount(0);
+          }
+        }
+      })
+      .catch(() => {
+        setUser(null);
+        setPostCount(0);
+      })
       .finally(() => setLoading(false));
   }, [username]);
 
@@ -72,7 +86,7 @@ function UserProfile() {
 
             <div className="user-stats">
               <div className="stat-item">
-                <span className="stat-number">{user.postsCount ?? 0}</span>{" "}
+                <span className="stat-number">{postCount}</span>{" "}
                 <span className="text-grey">bài viết</span>
               </div>
               <div className="stat-item">

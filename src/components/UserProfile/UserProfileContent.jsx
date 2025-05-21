@@ -1,68 +1,70 @@
 import React from "react";
 import "./UserProfileContent.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons"; // Sử dụng icon trái tim và bình luận
-const UserProfileContent = () => {
-  const posts = [
-    {
-      id: 1,
-      imageUrl: "https://cdn-media.sforum.vn/storage/app/media/anh-dep-68.jpg",
-      likes: 16,
-      comments: 244,
-    },
-    {
-      id: 2,
-      imageUrl: "https://cdn-media.sforum.vn/storage/app/media/anh-dep-68.jpg",
-      likes: 25,
-      comments: 100,
-    },
-    {
-      id: 3,
-      imageUrl:
-        "https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/11/tai-hinh-nen-dep-mien-phi.jpg",
-      likes: 8,
-      comments: 50,
-    },
-    {
-      id: 4,
-      imageUrl: "https://cdn-media.sforum.vn/storage/app/media/anh-dep-68.jpg",
-      likes: 120,
-      comments: 32,
-    },
-    {
-      id: 5,
-      imageUrl: "https://cdn-media.sforum.vn/storage/app/media/anh-dep-68.jpg",
-      likes: 55,
-      comments: 78,
-    },
-    {
-      id: 6,
-      imageUrl: "https://cdn-media.sforum.vn/storage/app/media/anh-dep-68.jpg",
-      likes: 30,
-      comments: 15,
-    },
-    // Thêm nhiều bài viết hơn với thông tin likes và comments
-  ];
+import { faHeart, faComment } from "@fortawesome/free-solid-svg-icons";
+import { getPostsByUserId } from '../../services/userService';
+import SkeletonImage from './SkeletonImage';
 
+// Hiệu ứng skeleton cho ảnh bài viết
+const ImageWithSkeleton = ({ src, alt }) => {
+  const [loaded, setLoaded] = React.useState(false);
+  return (
+    <div style={{ width: '100%', height: '100%', position: 'relative', minHeight: 0 }}>
+      {!loaded && (
+        <SkeletonImage width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+      )}
+      <img
+        src={src}
+        alt={alt}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', display: loaded ? 'block' : 'none' }}
+        onLoad={() => setLoaded(true)}
+      />
+    </div>
+  );
+};
+
+const UserProfileContent = () => {
+  const [posts, setPosts] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
   const [selectedPost, setSelectedPost] = React.useState(null);
   const PostModal = React.lazy(() => import('../../Modal/Post/PostModal'));
+  const userId = localStorage.getItem('userId');
+
+  React.useEffect(() => {
+    async function fetchPosts() {
+      if (!userId) return;
+      setLoading(true);
+      try {
+        const data = await getPostsByUserId(userId);
+        setPosts(data || []);
+      } catch (e) {
+        setPosts([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPosts();
+  }, [userId]);
+
+  if (loading) return <div>Đang tải bài viết...</div>;
 
   return (
     <div className="profile-posts">
+      {posts.length === 0 && <div>Chưa có bài viết nào.</div>}
       {posts.map((post) => (
         <div
-          key={post.id}
+          key={post.postId}
           className="post-item"
           onClick={() => setSelectedPost(post)}
           style={{ cursor: 'pointer' }}
         >
-          <img src={post.imageUrl} alt={`Bài viết ${post.id}`} />
+          <ImageWithSkeleton src={post.fileUrls && post.fileUrls[0]} alt={post.content?.slice(0, 20) || 'Bài viết'} />
           <div className="post-overlay">
             <div className="overlay-info">
-              <FontAwesomeIcon icon={faHeart} /> {post.likes}
+              <FontAwesomeIcon icon={faHeart} /> {post.likeCount}
             </div>
             <div className="overlay-info">
-              <FontAwesomeIcon icon={faComment} /> {post.comments}
+              <FontAwesomeIcon icon={faComment} /> {post.commentCount}
             </div>
           </div>
         </div>

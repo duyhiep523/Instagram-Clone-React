@@ -23,9 +23,6 @@ const HomePage = () => {
             <div className="main-post-section">
            
               <InstagramPost />
-              <InstagramPost />
-              <InstagramPost />
-              <InstagramPost />
             </div>
           </div>
           <div className="main-right-homepage">

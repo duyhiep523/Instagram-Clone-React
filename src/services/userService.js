@@ -1,11 +1,17 @@
 import { BASE_API_URL } from "../config";
 import axios from "axios";
 
-/**
- * Đăng ký tài khoản mới
- * @param {Object} param0 {email, username, password, full_name}
- * @returns {Promise<any>} Thông tin user hoặc lỗi
- */
+export async function getUserById(userId) {
+  const token = localStorage.getItem("token");
+  const response = await axios.get(`${BASE_API_URL}/users/${userId}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (response.data.code !== 200) throw new Error(response.data.message);
+  return response.data.data;
+}
+
+
+
 export async function register({ email, username, password, full_name }) {
   try {
     const response = await axios.post(`${BASE_API_URL}/users/register`, {
@@ -53,20 +59,9 @@ export async function getUserByUsername(username) {
   }
 
 
-  
+
 }
-/**
- * Cập nhật avatar người dùng
- * @param {string} userId
- * @param {File} file
- * @returns {Promise<any>}
- */
-/**
- * Cập nhật thông tin người dùng (fullName, bio, gender)
- * @param {string} userId
- * @param {{fullName: string, bio: string, gender: string}} data
- * @returns {Promise<any>}
- */
+
 export async function updateUserInfo(userId, { username, email, fullName, bio, gender }) {
   const token = localStorage.getItem("token");
   const response = await axios.put(
@@ -104,4 +99,31 @@ export async function updateUserAvatar(userId, file) {
     }
   );
   return response.data;
+} export async function getPostCountByUserId(userId) {
+  const token = localStorage.getItem("token");
+  const response = await axios.get(`${BASE_API_URL}/posts/count/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data.data;
+}
+
+export async function getPostsByUserId(userId) {
+  const token = localStorage.getItem("token");
+  const response = await axios.get(`${BASE_API_URL}/posts/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data.data;
+}export async function getPostDetailById(postId) {
+  const token = localStorage.getItem("token");
+  const response = await axios.get(`${BASE_API_URL}/posts/detail/${postId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data.data;
 }

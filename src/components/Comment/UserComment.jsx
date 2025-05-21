@@ -1,12 +1,12 @@
 import React from "react";
-import "./UserComment.css"; // Import file CSS (nếu có)
+import "./UserComment.css"; 
 
 function UserComment({ comment, onReply, level = 1, children }) {
   return (
     <div className={`user-comment comment-level-${level}`} style={{marginLeft: (level-1)*24}}>
       <div className="user-info">
         <div>
-          <img src={comment.avatar} alt={comment.username} />
+          <img src={comment.avatar} alt={comment.username} loading="lazy" />
         </div>      
         <div>
           <div>

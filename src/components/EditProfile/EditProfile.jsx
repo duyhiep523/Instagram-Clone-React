@@ -84,7 +84,7 @@ function EditProfile() {
         <img src={avatar} alt="Avatar" className="avatar-edit" />
         <div className="profile-info">
           <div>
-            <p className="username">duyhiep523</p>
+            <p className="username">{username}</p>
             <p className="fullname">{fullName}</p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>

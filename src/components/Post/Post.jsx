@@ -8,71 +8,51 @@ import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import { faBookmark } from "@fortawesome/free-regular-svg-icons";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
-function InstagramPost() {
+
+import { getFeedByUserId } from '../../services/feedService';
+
+export function Post({ post, onClick }) {
   const [showModal, setShowModal] = React.useState(false);
   const PostModal = React.lazy(() => import('../../Modal/Post/PostModal'));
-  // const [currentIdx, setCurrentIdx] = React.useState(0);
+  const [currentIdx, setCurrentIdx] = React.useState(0);
   const [liked, setLiked] = React.useState(false);
   const [showHeart, setShowHeart] = React.useState(false);
-  // Dữ liệu post mẫu, có thể lấy từ props hoặc API thực tế
-  // Dữ liệu demo post nhiều ảnh/video
-  const post = {
-    id: 1,
-    images: [
-      {
-        url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-        type: "image"
-      },
-      {
-        url: "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=800&q=80",
-        type: "image"
-      }
-    ],
-    likes: 583,
-    comments: 23,
-    caption: "Đây là caption demo cho bài viết nhiều ảnh/video",
-    username: "doc.sach.moi.ngay"
-  };
-  const [currentIdx, setCurrentIdx] = React.useState(0);
-  const handleShowModal = () => setShowModal(true);
-  const handleCloseModal = () => setShowModal(false);
+
+
   return (
     <div className="instagram-post">
       <div className="post__header">
         <div className="header__info">
           <div className="avatar">
             <img
-              src="https://cellphones.com.vn/sforum/wp-content/uploads/2024/02/avatar-anh-meo-cute-3.jpg"
+              src={post.avatarUrl || "https://cellphones.com.vn/sforum/wp-content/uploads/2024/02/avatar-anh-meo-cute-3.jpg"}
               alt="Avatar"
+              loading="lazy"
             />
           </div>
           <p>
-            <span className="username">doc.sach.moi.ngay</span>
-            <span className="time">7 giờ</span>
+            <span className="username">{post.username || post.userId}</span>
+            <span className="time">{post.createdAt}</span>
           </p>
         </div>
         <div className="header__options">
           <span>...</span>
         </div>
       </div>
-
-      {/* Phần Nội dung (Ảnh/Video) */}
       <div className="post__content">
-        {Array.isArray(post.images) && post.images.length > 0 ? (
+        {Array.isArray(post.fileUrls) && post.fileUrls.length > 0 ? (
           <div className="carousel" style={{position:'relative', width:'100%', display:'flex', justifyContent:'center', alignItems:'center'}}>
-            {post.images.length > 1 && (
+            {post.fileUrls.length > 1 && (
               <button
                 className="carousel-btn prev"
                 style={{position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', zIndex:2, width:24, height:24, fontSize:18, padding:0, background:'rgba(0,0,0,0.18)'}}
-                onClick={e => { e.stopPropagation(); setCurrentIdx((prev) => (prev === 0 ? post.images.length - 1 : prev - 1)); }}
+                onClick={e => { e.stopPropagation(); setCurrentIdx((prev) => (prev === 0 ? post.fileUrls.length - 1 : prev - 1)); }}
                 aria-label="prev"
               ><FiChevronLeft size={18} /></button>
             )}
             <div
               className="carousel-media"
-              style={{cursor:'pointer', width:'100%', display:'flex', justifyContent:'center', position:'relative'}} 
-              // Không mở modal khi click hoặc double click vào ảnh nữa
-              onClick={null}
+              style={{cursor:'pointer', width:'100%', display:'flex', justifyContent:'center', position:'relative'}}
               onDoubleClick={e => {
                 e.stopPropagation();
                 if (!liked) setLiked(true);
@@ -81,9 +61,10 @@ function InstagramPost() {
               }}
             >
               <img
-                src={post.images[currentIdx].url}
+                src={post.fileUrls[currentIdx]}
                 alt={`Ảnh ${currentIdx + 1}`}
                 className="carousel-img"
+                loading="lazy"
                 style={{width:'100%', height:'auto', objectFit:'cover', borderRadius:8}}
               />
               {showHeart && (
@@ -102,16 +83,16 @@ function InstagramPost() {
                 </span>
               )}
             </div>
-            {post.images.length > 1 && (
+            {post.fileUrls.length > 1 && (
               <button
                 className="carousel-btn next"
                 style={{position:'absolute', right:10, top:'50%', transform:'translateY(-50%)', zIndex:2, width:24, height:24, fontSize:18, padding:0, background:'rgba(0,0,0,0.18)'}}
-                onClick={e => { e.stopPropagation(); setCurrentIdx((prev) => (prev === post.images.length - 1 ? 0 : prev + 1)); }}
+                onClick={e => { e.stopPropagation(); setCurrentIdx((prev) => (prev === post.fileUrls.length - 1 ? 0 : prev + 1)); }}
                 aria-label="next"
               ><FiChevronRight size={18} /></button>
             )}
             <div className="carousel-dots">
-              {post.images.map((img, idx) => (
+              {post.fileUrls.map((img, idx) => (
                 <span
                   key={idx}
                   className={idx === currentIdx ? 'dot active' : 'dot'}
@@ -124,10 +105,10 @@ function InstagramPost() {
           <img
             src={post.imageUrl}
             alt="Post Content"
+            loading="lazy"
           />
         )}
       </div>
-
       <div className="post__actions">
         <div className="actions__left">
           <div className="action__item">
@@ -146,33 +127,71 @@ function InstagramPost() {
           </div>
         </div>
       </div>
-
       <div className="post__details">
-        <span className="likes">583 lượt thích</span>
+        <span className="likes">{post.likeCount} lượt thích</span>
         <div className="caption">
-          <span className="username">doc.sach.moi.ngay</span>
+          <span className="username">{post.username || post.userId}</span>
           <span className="text">
-            <p>hihi</p> <span className="see-more">xem thêm</span>
+            <p>{post.content}</p> <span className="see-more">xem thêm</span>
           </span>
         </div>
         {/* Phần Bình luận (có thể là một component riêng) */}
         <div className="post__comments">
-          <div className="view-all-comments" style={{cursor:'pointer'}} onClick={handleShowModal}>Xem tất cả 23 bình luận</div>
+          <div className="view-all-comments" style={{cursor:'pointer'}} onClick={() => setShowModal(true)}>
+            Xem tất cả {post.commentCount} bình luận
+          </div>
           <div className="add-comment">
             <input type="text" placeholder="Bình luận..." />
             <button disabled={true}>Đăng</button>
             <span className="emoji-icon">😊</span>{" "}
-            {/* Hoặc sử dụng icon từ thư viện */}
           </div>
         </div>
       </div>
-    {showModal && (
-      <React.Suspense fallback={<div>Đang tải...</div>}>
-        <PostModal onClose={handleCloseModal} post={post} />
-      </React.Suspense>
-    )}
+      {showModal && (
+        <React.Suspense fallback={<div>Đang tải...</div>}>
+          <PostModal onClose={() => setShowModal(false)} post={post} />
+        </React.Suspense>
+      )}
     </div>
   );
 }
 
-export default InstagramPost;
+// Component hiển thị danh sách bài viết đề xuất (feed)
+export default function InstagramFeed() {
+  const [posts, setPosts] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
+
+  React.useEffect(() => {
+    let ignore = false;
+    setLoading(true);
+    setError(null);
+    // Lấy userId từ localStorage
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      setError('Không tìm thấy userId!');
+      setLoading(false);
+      return;
+    }
+    getFeedByUserId(userId)
+      .then(data => { if (!ignore) setPosts(data); })
+      .catch(err => { if (!ignore) setError('Lỗi tải feed!'); })
+      .finally(() => { if (!ignore) setLoading(false); });
+    return () => { ignore = true; };
+  }, []);
+
+  if (loading) return <div>Đang tải bài viết...</div>;
+  if (error) return <div>{error}</div>;
+  if (!posts.length) return <div>Không có bài viết nào!</div>;
+
+  return (
+    <div>
+      {posts.map(post => (
+        <Post key={post.postId} post={post} />
+      ))}
+    </div>
+  );
+}
+
+
+
