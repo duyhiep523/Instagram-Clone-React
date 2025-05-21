@@ -93,7 +93,7 @@ const PostModal = ({ onClose, post }) => {
   if (!post) return null;
   if (loading || !detail) return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <div className="modal-content post-modal-fixed-width" onClick={e => e.stopPropagation()}>
         {/* Skeleton cho caption/avatar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 24 }}>
           <div className="skeleton-image" style={{ width: 40, height: 40, borderRadius: '50%' }}></div>
@@ -109,14 +109,14 @@ const PostModal = ({ onClose, post }) => {
   );
 
 
-  // Chuyển đổi detail.fileUrls thành mảng images cho carousel
+ 
   const images = Array.isArray(detail.fileUrls) ? detail.fileUrls.map(url => ({ url, type: 'image' })) : [];
 
   return (
     <div>
       <div className="modal-overlay" onClick={onClose}>
-        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-          <div className="post-image" style={{ height: '100%', display: 'flex', alignItems: 'stretch' }}>
+        <div className="modal-content post-modal-fixed-width" onClick={(e) => e.stopPropagation()}>
+          <div className="post-image">
             {images.length > 0 ? (
               <div className="carousel" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 {images.length > 1 && (
@@ -253,22 +253,10 @@ const PostModal = ({ onClose, post }) => {
 
 // Hiển thị caption và thời gian
 function PostCaption({ caption, createdAt }) {
-  function renderTime() {
-    if (!createdAt) return '';
-    const postTime = new Date(createdAt).getTime();
-    const now = new Date().getTime();
-    const diff = now - postTime;
-    if (diff < 60000) return 'Vừa xong';
-    if (diff < 3600000) return `${Math.floor(diff / 60000)} phút trước`;
-    if (diff < 86400000) return `${Math.floor(diff / 3600000)} giờ trước`;
-    if (diff < 7 * 86400000) return `${Math.floor(diff / 86400000)} ngày trước`;
-    const d = new Date(postTime);
-    return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
-  }
   return (
     <div style={{ marginTop: 8 }}>
       <span style={{ color: '#fff', fontSize: 15, wordBreak: 'break-word' }}>{caption || "Không có caption"}</span>
-      <span className="time-post" style={{ fontSize: 13, color: '#888', marginTop: 4 }}>{renderTime()}</span>
+      <span className="time-post" style={{ fontSize: 13, color: '#888', marginTop: 4 }}>  {formatTime(createdAt)}</span>
     </div>
   );
 }
@@ -286,25 +274,7 @@ function mapCommentsData(comments) {
 }
 
 // Hàm format thời gian cho comment
-function formatTime(createdAt) {
-  if (!createdAt) return '';
-  const postTime = new Date(createdAt).getTime();
-  const now = Date.now();
-  const diff = now - postTime;
-  const MINUTE = 60 * 1000;
-  const HOUR = 60 * MINUTE;
-  const DAY = 24 * HOUR;
-  const WEEK = 7 * DAY;
-  const MONTH = 30 * DAY;
-  const YEAR = 365 * DAY;
-  if (diff < MINUTE) return 'Vừa xong';
-  if (diff < HOUR) return `${Math.floor(diff / MINUTE)} phút trước`;
-  if (diff < DAY) return `${Math.floor(diff / HOUR)} giờ trước`;
-  if (diff < WEEK) return `${Math.floor(diff / DAY)} ngày trước`;
-  if (diff < MONTH) return `${Math.floor(diff / WEEK)} tuần trước`;
-  if (diff < YEAR) return `${Math.floor(diff / MONTH)} tháng trước`;
-  return `${Math.floor(diff / YEAR)} năm trước`;
-}
+import { formatTime } from '../../utils/time';
 
 export default PostModal;
 

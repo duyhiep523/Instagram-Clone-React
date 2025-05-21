@@ -11,28 +11,49 @@ import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 import { getFeedByUserId } from '../../services/feedService';
 
+import { getUserById } from '../../services/userService';
+
+import { formatTime } from '../../utils/time';
+
 export function Post({ post, onClick }) {
   const [showModal, setShowModal] = React.useState(false);
   const PostModal = React.lazy(() => import('../../Modal/Post/PostModal'));
   const [currentIdx, setCurrentIdx] = React.useState(0);
   const [liked, setLiked] = React.useState(false);
   const [showHeart, setShowHeart] = React.useState(false);
+  const [author, setAuthor] = React.useState(null);
+  const [authorLoading, setAuthorLoading] = React.useState(true);
 
+  React.useEffect(() => {
+    let ignore = false;
+    setAuthorLoading(true);
+    getUserById(post.userId)
+      .then(data => { if (!ignore) { setAuthor(data); setAuthorLoading(false); } })
+      .catch(() => { if (!ignore) setAuthorLoading(false); });
+    return () => { ignore = true; };
+  }, [post.userId]);
 
   return (
     <div className="instagram-post">
       <div className="post__header">
         <div className="header__info">
           <div className="avatar">
-            <img
-              src={post.avatarUrl || "https://cellphones.com.vn/sforum/wp-content/uploads/2024/02/avatar-anh-meo-cute-3.jpg"}
-              alt="Avatar"
-              loading="lazy"
-            />
+            {authorLoading ? (
+              <div style={{width:40,height:40,borderRadius:'50%',background:'#eee'}} />
+            ) : (
+              <img
+                src={author?.profilePictureUrl || "https://cellphones.com.vn/sforum/wp-content/uploads/2024/02/avatar-anh-meo-cute-3.jpg"}
+                alt="Avatar"
+                loading="lazy"
+                style={{width:40,height:40,borderRadius:'50%',objectFit:'cover'}}
+              />
+            )}
           </div>
           <p>
-            <span className="username">{post.username || post.userId}</span>
-            <span className="time">{post.createdAt}</span>
+            <span className="username">
+              {authorLoading ? <span style={{background:'#eee',width:80,height:16,display:'inline-block',borderRadius:4}} /> : (author?.username || post.userId)}
+            </span>
+            <span className="time">{formatTime(post.createdAt)}</span>
           </p>
         </div>
         <div className="header__options">
@@ -41,7 +62,7 @@ export function Post({ post, onClick }) {
       </div>
       <div className="post__content">
         {Array.isArray(post.fileUrls) && post.fileUrls.length > 0 ? (
-          <div className="carousel" style={{position:'relative', width:'100%', display:'flex', justifyContent:'center', alignItems:'center'}}>
+          <div className="carousel" style={{position:'relative', width:'100%', height:480, display:'flex', justifyContent:'center', alignItems:'center', overflow:'hidden', background:'#18191a'}}>
             {post.fileUrls.length > 1 && (
               <button
                 className="carousel-btn prev"
@@ -65,7 +86,7 @@ export function Post({ post, onClick }) {
                 alt={`Ảnh ${currentIdx + 1}`}
                 className="carousel-img"
                 loading="lazy"
-                style={{width:'100%', height:'auto', objectFit:'cover', borderRadius:8}}
+                style={{width:'100%', height:480, objectFit:'cover', borderRadius:8, background:'#222'}}
               />
               {showHeart && (
                 <span style={{
@@ -132,7 +153,7 @@ export function Post({ post, onClick }) {
         <div className="caption">
           <span className="username">{post.username || post.userId}</span>
           <span className="text">
-            <p>{post.content}</p> <span className="see-more">xem thêm</span>
+            <p>{post.content}</p>
           </span>
         </div>
         {/* Phần Bình luận (có thể là một component riêng) */}

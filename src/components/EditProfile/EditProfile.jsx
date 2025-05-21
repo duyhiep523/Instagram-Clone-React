@@ -67,10 +67,32 @@ function EditProfile() {
       if (avatarFile && userId) {
         await updateUserAvatar(userId, avatarFile);
       }
-      toast.success("Cập nhật thông tin thành công!");
-      // Có thể reload lại trang hoặc gọi API lấy user mới nếu muốn
+      toast.success("Cập nhật thông tin thành công!", {
+        autoClose: 1500,
+
+        style: {
+          background: '#22c55e',
+          color: '#fff',
+          fontWeight: 600,
+          border: '2px solid #22c55e',
+          boxShadow: '0 2px 12px rgba(18, 243, 100, 0.18)'
+        },
+        icon: <span style={{ color: '#22c55e', fontSize: 22 }}>✔</span>
+      });
+     
     } catch (err) {
-      toast.error("Cập nhật thông tin thất bại!");
+      toast.error("Cập nhật thông tin thất bại!", {
+        autoClose: 2000,
+
+        style: {
+          background: '#ff4d4f',
+          color: '#fff',
+          fontWeight: 600,
+          border: '2px solid #ff4d4f',
+          boxShadow: '0 2px 12px rgba(255,77,79,0.18)'
+        },
+        icon: <span style={{ color: '#ff4d4f', fontSize: 22 }}>✖</span>
+      });
     }
   };
 
@@ -103,16 +125,49 @@ function EditProfile() {
               disabled={avatarUploading}
               onClick={async () => {
                 if (!avatarFile || !userId) {
-                  toast.error("Vui lòng chọn ảnh mới!");
+                  toast.error("Vui lòng chọn ảnh mới!", {
+                    autoClose: 2000,
+
+                    style: {
+                      background: '#ff4d4f',
+                      color: '#fff',
+                      fontWeight: 600,
+                      border: '2px solid #ff4d4f',
+                      boxShadow: '0 2px 12px rgba(255,77,79,0.18)'
+                    },
+                    icon: <span style={{ color: '#ff4d4f', fontSize: 22 }}>✖</span>
+                  });
                   return;
                 }
                 setAvatarUploading(true);
                 try {
                   await updateUserAvatar(userId, avatarFile);
-                  toast.success("Cập nhật ảnh đại diện thành công!");
+                  toast.success("Cập nhật ảnh đại diện thành công!", {
+                    autoClose: 1500,
+
+                    style: {
+                      background: '#22c55e',
+                      color: '#fff',
+                      fontWeight: 600,
+                      border: '2px solid #22c55e',
+                      boxShadow: '0 2px 12px rgba(34,197,94,0.18)'
+                    },
+                    icon: <span style={{ color: '#22c55e', fontSize: 22 }}>✔</span>
+                  });
                 } catch (error) {
                   console.error("Lỗi cập nhật avatar:", error);
-                  toast.error("Cập nhật ảnh đại diện thất bại!");
+                  toast.error("Cập nhật ảnh đại diện thất bại!", {
+                    autoClose: 2000,
+
+                    style: {
+                      background: '#ff4d4f',
+                      color: '#fff',
+                      fontWeight: 600,
+                      border: '2px solid #ff4d4f',
+                      boxShadow: '0 2px 12px rgba(255,77,79,0.18)'
+                    },
+                    icon: <span style={{ color: '#ff4d4f', fontSize: 22 }}>✖</span>
+                  });
                 } finally {
                   setAvatarUploading(false);
                 }
@@ -120,7 +175,7 @@ function EditProfile() {
             >
               {avatarUploading ? "Đang lưu..." : "Lưu ảnh đại diện"}
             </button>
-            <ToastContainer position="top-center" autoClose={2000} />
+
           </div>
         </div>
       </div>
