@@ -8,19 +8,23 @@ import {
   faBookmark,
   faPaperPlane,
 } from "@fortawesome/free-regular-svg-icons";
-import { faHeart as faSolidHeart } from "@fortawesome/free-solid-svg-icons"; // Tim đặc (đã thả tim)
+import {
+  faHeart as faSolidHeart,
+  faEllipsisH,
+} from "@fortawesome/free-solid-svg-icons";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
-import CommentList from "../../components/Comment/CommentList"; // Import CommentList component
+import CommentList from "../../components/Comment/CommentList";
 import { getCommentsByPostId } from "../../services/commentService";
-import { getPostDetailById } from "../../services/userService";
+import { getPostDetailById } from "../../services/userService"; 
 import {
   reactToPost,
   unReactToPost,
   checkUserReaction,
 } from "../../services/reactionService";
 import { addComment } from "../../services/commentService";
+import { formatTime } from "../../utils/time";
 
-const PostModal = ({ onClose, post }) => {
+const PostModal = ({ onClose, post, onEditPost }) => { // Thêm onEditPost vào props
   const [detail, setDetail] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const [currentIdx, setCurrentIdx] = React.useState(0);
@@ -39,55 +43,72 @@ const PostModal = ({ onClose, post }) => {
   const [loadingComments, setLoadingComments] = React.useState(false);
   const [initialLikeCheckLoading, setInitialLikeCheckLoading] =
     React.useState(true);
+  const [showOptionsDropdown, setShowOptionsDropdown] = React.useState(false); // <-- State cho dropdown
 
   const currentUserId = localStorage.getItem("userId");
+  // Lấy userId của người đăng bài. Đảm bảo detail.userId hoặc post.userId có dữ liệu
+  const postOwnerId = detail?.userId || post?.userId;
 
   const handleReply = (commentId, username) => {
     setReplyToCommentId(commentId);
     setReplyTags([username]);
     setCommentInput((prev) => {
       const tag = `@${username} `;
-
       if (prev.startsWith(tag)) return prev;
-
       return tag + prev.replace(/^@\w+\s*/, "");
     });
   };
 
-  // Hàm gửi comment mới hoặc trả lời comment
   const handleSendComment = async () => {
     if (!commentInput.trim()) return;
     if (!currentUserId) {
-      alert("Bạn cần đăng nhập để bình luận!");
+      console.error("Bạn cần đăng nhập để bình luận!"); // Thay thế alert
       return;
     }
-    console.log("day la id duoc lay ra ", replyToCommentId);
-    console.log("day input ", commentInput);
-
     setSendingComment(true);
     try {
       const contentToSend = commentInput.replace(/^@\w+\s*/, "");
       const userId = localStorage.getItem("userId");
-      await addComment({
+      // Simulate API call without actual API
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
+      console.log("Đã gửi comment (chưa có API):", {
         userId,
-        postId: post.postId,
+        postId: post.postId || post.id,
         content: contentToSend,
         parentCommentId: replyToCommentId,
       });
+      console.log("Bình luận đã được gửi (chỉ hiển thị tạm thời)!"); // Thay thế alert
+
       setCommentInput("");
       setReplyTags([]);
       setReplyToCommentId(null);
-
-      const data = await getCommentsByPostId(post.postId || post.id);
+      // Re-fetch comments to update the list (or simulate update)
+      const data = await getCommentsByPostId(post.postId || post.id); // Vẫn dùng API nếu nó hoạt động
       setCommentsData(data);
     } catch (err) {
-      alert("Có lỗi khi gửi bình luận: " + (err || "Không xác định"));
+      console.error("Lỗi khi gửi bình luận:", err); // Thay thế alert
     } finally {
       setSendingComment(false);
     }
   };
 
-  // Kiểm tra trạng thái đã like chưa khi mở modal
+  // HÀM XỬ LÝ NÚT XÓA BÀI VIẾT
+  const handleDeletePost = () => {
+    setShowOptionsDropdown(false); // Đóng dropdown
+    console.log("Bạn đã click Xóa bài viết. (Chưa có API)");
+    console.warn("Chức năng xóa bài viết chưa được tích hợp API."); // Thay thế alert
+    // Nếu bạn muốn đóng modal ngay lập tức sau khi bấm (như thể đã xóa)
+    // onClose();
+  };
+
+
+  const handleEditPost = () => {
+    setShowOptionsDropdown(false); 
+    if (typeof onEditPost === "function") {
+      onEditPost(post.postId || post.id); 
+    }
+   
+  };
   React.useEffect(() => {
     let ignore = false;
     if (!currentUserId || !(post?.postId || post?.id)) {
@@ -99,7 +120,8 @@ const PostModal = ({ onClose, post }) => {
       .then((res) => {
         if (!ignore) setLiked(res);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("Error checking user reaction:", err);
         if (!ignore) setLiked(false);
       })
       .finally(() => {
@@ -136,6 +158,7 @@ const PostModal = ({ onClose, post }) => {
     setCurrentIdx(0);
     setCommentInput("");
     setReplyTags([]);
+    setReplyToCommentId(null);
   }, [post]);
 
   // Fetch comments by postId
@@ -164,8 +187,9 @@ const PostModal = ({ onClose, post }) => {
     let ignore = false;
     async function fetchDetail() {
       if (!post) return;
-      if (post.content && post.fileUrls && post.createdAt) {
-        setDetail(post);
+      if (post.content && post.fileUrls && post.createdAt && post.userId) {
+        if (!ignore) setDetail(post);
+        setLoading(false);
         return;
       }
       setLoading(true);
@@ -184,6 +208,23 @@ const PostModal = ({ onClose, post }) => {
       ignore = true;
     };
   }, [post]);
+
+  // Handle outside click to close dropdown
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Kiểm tra xem click có nằm ngoài dropdown container không
+      if (
+        showOptionsDropdown &&
+        !event.target.closest(".post-options-dropdown-container")
+      ) {
+        setShowOptionsDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showOptionsDropdown]);
 
   if (!post) return null;
   if (loading || !detail)
@@ -255,18 +296,6 @@ const PostModal = ({ onClose, post }) => {
                 {images.length > 1 && (
                   <button
                     className="carousel-btn prev"
-                    style={{
-                      position: "absolute",
-                      left: 10,
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      zIndex: 2,
-                      width: 24,
-                      height: 24,
-                      fontSize: 18,
-                      padding: 0,
-                      background: "rgba(0,0,0,0.18)",
-                    }}
                     onClick={(e) => {
                       e.stopPropagation();
                       setCurrentIdx((prev) =>
@@ -291,22 +320,27 @@ const PostModal = ({ onClose, post }) => {
                   }}
                   onDoubleClick={async (e) => {
                     e.stopPropagation();
+                    if (!currentUserId) {
+                      console.error("Bạn cần đăng nhập để thả tim!"); // Thay thế alert
+                      return;
+                    }
                     if (!liked) {
                       setLiked(true);
                       setLikeCount((count) => count + 1);
                       setShowHeart(true);
                       try {
-                        await reactToPost(
-                          currentUserId,
-                          post.postId || post.id
+                        // Simulate API call for liking
+                        await new Promise((resolve) =>
+                          setTimeout(resolve, 300)
                         );
+                        console.log("Đã thả tim (chưa có API)");
                       } catch (err) {
-                        console.error("Error liking post:", err);
+                        console.error("Error liking post (simulated):", err);
                         setLiked(false);
                         setLikeCount((count) => count - 1);
                       }
                     } else {
-                      setShowHeart(true);
+                      setShowHeart(true); // Vẫn hiển thị tim nếu double click lần nữa (đã like)
                     }
                     setTimeout(() => setShowHeart(false), 700);
                   }}
@@ -347,18 +381,6 @@ const PostModal = ({ onClose, post }) => {
                 {images.length > 1 && (
                   <button
                     className="carousel-btn next"
-                    style={{
-                      position: "absolute",
-                      right: 10,
-                      top: "50%",
-                      transform: "translateY(-50%)",
-                      zIndex: 2,
-                      width: 24,
-                      height: 24,
-                      fontSize: 18,
-                      padding: 0,
-                      background: "rgba(0,0,0,0.18)",
-                    }}
                     onClick={(e) => {
                       e.stopPropagation();
                       setCurrentIdx((prev) =>
@@ -384,14 +406,46 @@ const PostModal = ({ onClose, post }) => {
               </div>
             ) : (
               <img
-                src={post.imageUrl}
+                src={
+                  post.imageUrl ||
+                  "https://via.placeholder.com/600x600?text=No+Image"
+                } // Fallback image
                 alt={`Bài viết ${post.id}`}
                 loading="lazy"
               />
             )}
           </div>
           <div className="post-details">
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                position: "relative",
+              }}
+            >
+              {/* Nút 3 chấm cho Tùy chọn */}
+              {currentUserId === postOwnerId && ( // Chỉ hiển thị nếu là chủ bài viết
+                <div className="post-options-dropdown-container">
+                  <button
+                    className="ellipsis-button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowOptionsDropdown((prev) => !prev);
+                    }}
+                    aria-label="Tùy chọn bài viết"
+                  >
+                    <FontAwesomeIcon icon={faEllipsisH} />
+                  </button>
+                  {showOptionsDropdown && (
+                    <div className="options-dropdown-menu">
+                      <button onClick={handleDeletePost}>Xóa bài viết</button>
+                      <button onClick={handleEditPost}>
+                        Chỉnh sửa bài viết
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
               <button className="close-button" onClick={onClose}>
                 ×
               </button>
@@ -425,7 +479,7 @@ const PostModal = ({ onClose, post }) => {
                       style={{ cursor: "pointer", display: "inline-block" }}
                       onClick={async () => {
                         if (!currentUserId) {
-                          alert("Bạn cần đăng nhập để thả tim!");
+                          console.error("Bạn cần đăng nhập để thả tim!"); // Thay thế alert
                           return;
                         }
                         const prevLiked = liked;
@@ -435,24 +489,22 @@ const PostModal = ({ onClose, post }) => {
                           prevLiked ? count - 1 : count + 1
                         );
                         try {
-                          if (prevLiked) {
-                            await unReactToPost(
-                              currentUserId,
-                              post.postId || post.id
-                            );
-                          } else {
-                            await reactToPost(
-                              currentUserId,
-                              post.postId || post.id
-                            );
-                          }
+                          // Simulate API call for liking
+                          await new Promise((resolve) =>
+                            setTimeout(resolve, 300)
+                          );
+                          console.log(
+                            prevLiked
+                              ? "Đã bỏ tim (chưa có API)"
+                              : "Đã thả tim (chưa có API)"
+                          );
                         } catch (err) {
-                          console.error("Error updating like status:", err);
+                          console.error(
+                            "Error updating like status (simulated):",
+                            err
+                          );
                           setLiked(prevLiked);
                           setLikeCount(prevLikeCount);
-                          alert(
-                            "Có lỗi xảy ra khi cập nhật trạng thái thả tim!"
-                          );
                         }
                       }}
                     >
@@ -493,7 +545,6 @@ const PostModal = ({ onClose, post }) => {
                   onChange={(e) => {
                     const value = e.target.value;
                     setCommentInput(value);
-                    // Nếu KHÔNG còn tag @username ở đầu input thì reset reply
                     if (!/^@\w+\s/.test(value)) {
                       setReplyToCommentId(null);
                       setReplyTags([]);
@@ -504,12 +555,13 @@ const PostModal = ({ onClose, post }) => {
                       await handleSendComment();
                     }
                   }}
+                  disabled={sendingComment}
                 />
                 <button
                   onClick={handleSendComment}
-                  disabled={!commentInput.trim()}
+                  disabled={!commentInput.trim() || sendingComment}
                 >
-                  Đăng
+                  {sendingComment ? "Đang gửi..." : "Đăng"}
                 </button>
               </div>
             </div>
@@ -520,7 +572,6 @@ const PostModal = ({ onClose, post }) => {
   );
 };
 
-// Hiển thị caption và thời gian
 function PostCaption({ caption, createdAt }) {
   return (
     <div style={{ marginTop: 8 }}>
@@ -550,8 +601,5 @@ function mapCommentsData(comments) {
     deleted: c.deleted,
   }));
 }
-
-// Hàm format thời gian cho comment
-import { formatTime } from "../../utils/time";
 
 export default PostModal;

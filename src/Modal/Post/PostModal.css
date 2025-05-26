@@ -214,3 +214,123 @@
   cursor: pointer;
   font-weight: bold;
 }
+
+
+
+.post-options-dropdown-container {
+  position: absolute;
+  top: 10px; 
+  right: 40px; /* Đặt gần nút đóng */
+  z-index: 10; /* Đảm bảo nó nằm trên các phần tử khác */
+}
+
+.ellipsis-button {
+  background: none;
+  border: none;
+  color: #fff; /* Màu icon ba chấm */
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.ellipsis-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.options-dropdown-menu {
+  position: absolute;
+  top: 100%; /* Đặt dưới nút ba chấm */
+  right: 0;
+  background-color: #262626; /* Màu nền menu */
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  overflow: hidden; /* Đảm bảo nút con không tràn ra ngoài */
+  min-width: 150px; /* Chiều rộng tối thiểu */
+  z-index: 11; /* Cao hơn container */
+  padding: 5px 0; /* Khoảng đệm cho các nút */
+}
+
+.options-dropdown-menu button {
+  display: block;
+  width: 100%;
+  padding: 10px 15px;
+  text-align: left;
+  background: none;
+  border: none;
+  color: #fff; /* Màu chữ */
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.options-dropdown-menu button:hover {
+  background-color: #3a3a3a; /* Màu nền khi hover */
+}
+
+/* Các nút điều hướng carousel */
+.carousel-btn {
+  position: absolute; /* Thêm position absolute nếu bạn muốn di chuyển tự do */
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  z-index: 2; /* Đảm bảo nút nằm trên ảnh */
+}
+
+.carousel-btn.prev {
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.carousel-btn.next {
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.carousel-btn:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* CSS cho animation tim double click */
+@keyframes heartBeat {
+  0% { transform: translate(-50%,-50%) scale(0); opacity: 0; }
+  15% { transform: translate(-50%,-50%) scale(1.2); opacity: 1; }
+  30% { transform: translate(-50%,-50%) scale(0.9); }
+  45% { transform: translate(-50%,-50%) scale(1.1); }
+  60% { transform: translate(-50%,-50%) scale(1); }
+  100% { transform: translate(-50%,-50%) scale(0.8); opacity: 0; }
+}
+
+.post-image span { 
+  animation: heartBeat 0.7s ease-out forwards;
+}
+
+/* Đảm bảo modal overlay và content có z-index phù hợp */
+.modal-overlay {
+  z-index: 1000;
+}
+.modal-content {
+  z-index: 1001;
+}
+
+/* Style cho input bình luận khi disabled */
+.comment-input input:disabled {
+  background-color: #333;
+  cursor: not-allowed;
+}
+
+.comment-input button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -3,6 +3,7 @@ import "./Post.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart as faSolidHeart } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as faRegularHeart } from "@fortawesome/free-regular-svg-icons";
+import UpdatePostModal from "./UpdatePostModal";
 import {
   faComment,
   faPaperPlane,
@@ -10,7 +11,6 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
-// Import các service cần thiết
 import { getFeedByUserId } from "../../services/feedService";
 import { getUserById } from "../../services/userService";
 import {
@@ -22,11 +22,17 @@ import {
 import { formatTime } from "../../utils/time";
 
 export function Post({ post, onClick }) {
-  // State để quản lý hiển thị modal bình luận
   const [showModal, setShowModal] = React.useState(false);
-  // Lazy load component PostModal để tối ưu hiệu suất
   const PostModal = React.lazy(() => import("../../Modal/Post/PostModal"));
-
+    const [showEditPostModal, setShowEditPostModal] = React.useState(false); // <-- Thêm dòng này
+  const [postIdToEdit, setPostIdToEdit] = React.useState(null); 
+  const handleEditPostFromPostModal = (postId) => {
+   
+    setPostIdToEdit(postId);
+    setShowEditPostModal(true);
+    setShowModal(false);
+   
+  };
   const [currentIdx, setCurrentIdx] = React.useState(0);
 
   const [isLikedByUser, setIsLikedByUser] = React.useState(false);
@@ -455,8 +461,16 @@ export function Post({ post, onClick }) {
       </div>
       {showModal && (
         <React.Suspense fallback={<div>Đang tải...</div>}>
-          <PostModal onClose={() => setShowModal(false)} post={post} />
+          <PostModal onClose={() => setShowModal(false)} post={post} 
+             onEditPost={handleEditPostFromPostModal}
+          />
         </React.Suspense>
+      )}
+      {showEditPostModal && (
+        <UpdatePostModal
+          postId={postIdToEdit}
+          onClose={() => setShowEditPostModal(false)}
+        />
       )}
     </div>
   );

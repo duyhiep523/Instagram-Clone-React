@@ -2,17 +2,17 @@
 import React, { useState, useEffect } from "react";
 import styles from "./HighlightList.module.css";
 import { Plus } from "react-feather";
-import HighlightModal from "./HighlightModal"; // Giữ lại cho chức năng tạo mới
-import EditHighlightModal from "./EditHighlightModal"; // Import component mới
+import HighlightModal from "./HighlightModal"; 
+import EditHighlightModal from "./EditHighlightModal"; 
 import StorySection from "../Story/StorySection";
 import { getAllHighlightStories, deleteHighlightStory } from "../../services/highlightServices";
 import { toast } from "react-toastify";
 
 export default function HighlightList({ isOwnProfile = true, userId }) {
   const [highlights, setHighlights] = useState([]);
-  const [showCreateModal, setShowCreateModal] = useState(false); // Đổi tên state cho rõ ràng
-  const [showEditModal, setShowEditModal] = useState(false); // State mới cho modal chỉnh sửa
-  const [editingHighlightId, setEditingHighlightId] = useState(null); // Lưu ID của highlight đang chỉnh sửa
+  const [showCreateModal, setShowCreateModal] = useState(false); 
+  const [showEditModal, setShowEditModal] = useState(false); 
+  const [editingHighlightId, setEditingHighlightId] = useState(null);
   const [openHighlight, setOpenHighlight] = useState(null);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function HighlightList({ isOwnProfile = true, userId }) {
             id: item.storyId,
             name: item.storyName,
             cover: item.storyImage,
-            stories: [], // Dữ liệu API của bạn không trả về stories trong danh sách, nên để trống hoặc fetch riêng nếu cần
+            stories: [], 
           }))
         );
       } catch (err) {
@@ -35,12 +35,12 @@ export default function HighlightList({ isOwnProfile = true, userId }) {
   }, [userId]);
 
   const handleAdd = () => {
-    setShowCreateModal(true); // Mở modal tạo mới
+    setShowCreateModal(true); 
   };
 
   const handleEdit = (hl) => {
-    setEditingHighlightId(hl.id); // Lưu ID của highlight cần chỉnh sửa
-    setShowEditModal(true); // Mở modal chỉnh sửa
+    setEditingHighlightId(hl.id); 
+    setShowEditModal(true); 
   };
 
   const handleDelete = async (id) => {
@@ -58,9 +58,7 @@ export default function HighlightList({ isOwnProfile = true, userId }) {
     }
   };
 
-  // Hàm này sẽ được gọi khi tạo mới HOẶC chỉnh sửa xong highlight
   const handleHighlightSave = () => {
-    // Re-fetch lại toàn bộ danh sách để cập nhật UI
     getAllHighlightStories(userId)
       .then(data => setHighlights(data.map((item) => ({
         id: item.storyId,
@@ -119,7 +117,7 @@ export default function HighlightList({ isOwnProfile = true, userId }) {
       {showCreateModal && (
         <HighlightModal
           onSave={() => {
-            handleHighlightSave(); // Gọi hàm xử lý sau khi tạo/sửa xong
+            handleHighlightSave(); 
             setShowCreateModal(false);
           }}
           onClose={() => setShowCreateModal(false)}
@@ -130,9 +128,9 @@ export default function HighlightList({ isOwnProfile = true, userId }) {
       {/* Modal chỉnh sửa */}
       {showEditModal && (
         <EditHighlightModal
-          highlightId={editingHighlightId} // Truyền ID của highlight cần chỉnh sửa
+          highlightId={editingHighlightId} 
           onSave={() => {
-            handleHighlightSave(); // Gọi hàm xử lý sau khi tạo/sửa xong
+            handleHighlightSave(); 
             setShowEditModal(false);
           }}
           onClose={() => setShowEditModal(false)}
