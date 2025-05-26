@@ -1,0 +1,276 @@
+
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalContainer {
+  background: #262626;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  max-height: 600px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  color: #f0f2f5;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #363636;
+  position: relative;
+}
+
+.modalTitle {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.closeButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.closeButton svg {
+  stroke: currentColor;
+}
+
+.searchContainer {
+  padding: 16px 20px;
+  border-bottom: 1px solid #363636;
+  background-color: #262626;
+}
+
+.searchInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  color: #8e8e8e;
+  z-index: 1;
+}
+
+.searchInput {
+  width: 100%;
+  background: #121212;
+  border: 1px solid #363636;
+  border-radius: 8px;
+  padding: 8px 12px 8px 36px;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+  border-color: #0095f6;
+}
+
+.searchInput::placeholder {
+  color: #8e8e8e;
+}
+
+.followingList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.loading, .noResults, .error {
+  padding: 40px 20px;
+  text-align: center;
+  color: #8e8e8e;
+  font-size: 14px;
+}
+
+.followingItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px;
+  transition: background-color 0.2s;
+}
+
+.followingItem:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.followingInfo {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: 12px;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.username {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fullName {
+  color: #8e8e8e;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.actionButtons {
+  flex-shrink: 0;
+}
+
+/* Base style for all action buttons */
+.actionButtons button {
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  min-width: 110px; /* Consistent width for all buttons */
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, opacity 0.2s; /* Add opacity for disabled state */
+}
+
+.actionButtons button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Style cho nút "Theo dõi" (khi bấm sẽ follow) */
+.followButton {
+  background: #0095f6; /* Màu xanh dương nổi bật */
+  color: #ffffff;
+}
+
+.followButton:hover:not(:disabled) {
+  background: #1877f2;
+}
+
+/* Style cho nút "Đang theo dõi" (khi bấm sẽ unfollow) */
+.followingButton {
+  background: #363636; /* Màu xám đậm */
+  color: #ffffff;
+  border: 1px solid #363636;
+}
+
+.followingButton:hover:not(:disabled) {
+  background: #262626;
+  border-color: #8e8e8e;
+}
+
+/* Style cho nút "Bạn bè" (Friend) */
+.friendButton {
+  background: #363636; /* Màu xám đậm, giống "Đang theo dõi" */
+  color: #ffffff;
+  border: 1px solid #363636;
+}
+
+.friendButton:hover:not(:disabled) {
+  background: #262626;
+  border-color: #8e8e8e;
+}
+
+
+.usernameLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.usernameLink:hover .username {
+  text-decoration: underline;
+}
+
+/* Scrollbar styling */
+.followingList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.followingList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.followingList::-webkit-scrollbar-thumb {
+  background: #8e8e8e;
+  border-radius: 3px;
+}
+
+.followingList::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .modalContainer {
+    max-width: 100%;
+    margin: 0 10px;
+  }
+}

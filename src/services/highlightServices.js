@@ -49,6 +49,8 @@ export async function getAllHighlightStories(userId) {
 
 
 
+
+
 export async function getHighlightStoryDetail(userId, storyId) {
   const token = localStorage.getItem("token");
   const response = await axios.get(
@@ -61,6 +63,50 @@ export async function getHighlightStoryDetail(userId, storyId) {
   );
   if (response.data.code !== 200) {
     throw new Error(response.data.message || "Lấy chi tiết Highlight Story thất bại");
+  }
+  return response.data.data;
+}
+
+
+
+export async function deleteHighlightStory(userId, storyId) {
+  const token = localStorage.getItem("token");
+  const response = await axios.delete(
+    `${BASE_API_URL}/highlight-stories/${userId}/${storyId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  if (response.data.code !== 200) {
+    throw new Error(response.data.message || "Xóa Highlight Story thất bại");
+  }
+  return response.data; 
+}
+
+
+
+export async function updateHighlightStory(userId, storyId, storyName, images) {
+  const token = localStorage.getItem("token");
+  const formData = new FormData();
+  formData.append("storyName", storyName);
+  if (images) {
+    images.forEach(file => formData.append("images", file));
+  }
+
+  const response = await axios.put(
+    `${BASE_API_URL}/highlight-stories/${userId}/${storyId}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  if (response.data.code !== 200) {
+    throw new Error(response.data.message || "Cập nhật Highlight Story thất bại");
   }
   return response.data.data;
 }

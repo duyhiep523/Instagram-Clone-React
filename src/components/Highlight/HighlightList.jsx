@@ -1,15 +1,18 @@
+// HighlightList.jsx
 import React, { useState, useEffect } from "react";
 import styles from "./HighlightList.module.css";
 import { Plus } from "react-feather";
-import HighlightModal from "./HighlightModal";
+import HighlightModal from "./HighlightModal"; // Giữ lại cho chức năng tạo mới
+import EditHighlightModal from "./EditHighlightModal"; // Import component mới
 import StorySection from "../Story/StorySection";
-import { getAllHighlightStories } from "../../services/highlightServices";
+import { getAllHighlightStories, deleteHighlightStory } from "../../services/highlightServices";
 import { toast } from "react-toastify";
 
 export default function HighlightList({ isOwnProfile = true, userId }) {
   const [highlights, setHighlights] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [editing, setEditing] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false); // Đổi tên state cho rõ ràng
+  const [showEditModal, setShowEditModal] = useState(false); // State mới cho modal chỉnh sửa
+  const [editingHighlightId, setEditingHighlightId] = useState(null); // Lưu ID của highlight đang chỉnh sửa
   const [openHighlight, setOpenHighlight] = useState(null);
 
   useEffect(() => {
@@ -21,7 +24,7 @@ export default function HighlightList({ isOwnProfile = true, userId }) {
             id: item.storyId,
             name: item.storyName,
             cover: item.storyImage,
-            stories: [],
+            stories: [], // Dữ liệu API của bạn không trả về stories trong danh sách, nên để trống hoặc fetch riêng nếu cần
           }))
         );
       } catch (err) {
@@ -32,27 +35,42 @@ export default function HighlightList({ isOwnProfile = true, userId }) {
   }, [userId]);
 
   const handleAdd = () => {
-    setEditing(null);
-    setShowModal(true);
+    setShowCreateModal(true); // Mở modal tạo mới
   };
 
   const handleEdit = (hl) => {
-    setEditing(hl);
-    setShowModal(true);
+    setEditingHighlightId(hl.id); // Lưu ID của highlight cần chỉnh sửa
+    setShowEditModal(true); // Mở modal chỉnh sửa
   };
 
-  // const handleSave = (hl) => {
-  //   if (hl.id) {
-  //     setHighlights(highlights.map((h) => (h.id === hl.id ? hl : h)));
-  //   } else {
-  //     setHighlights([...highlights, { ...hl, id: Date.now() }]);
-  //   }
-  //   setShowModal(false);
-  // };
+  const handleDelete = async (id) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa highlight này không?")) {
+      return;
+    }
 
-  const handleDelete = (id) => {
-    setHighlights(highlights.filter((h) => h.id !== id));
+    try {
+      const response = await deleteHighlightStory(userId, id);
+      setHighlights(highlights.filter((h) => h.id !== id));
+      toast.success(response.message || "Xóa Highlight Story thành công!");
+    } catch (err) {
+      console.error("Lỗi khi xóa highlight story:", err);
+      toast.error(err.message || "Xóa Highlight Story thất bại!");
+    }
   };
+
+  // Hàm này sẽ được gọi khi tạo mới HOẶC chỉnh sửa xong highlight
+  const handleHighlightSave = () => {
+    // Re-fetch lại toàn bộ danh sách để cập nhật UI
+    getAllHighlightStories(userId)
+      .then(data => setHighlights(data.map((item) => ({
+        id: item.storyId,
+        name: item.storyName,
+        cover: item.storyImage,
+        stories: [],
+      }))))
+      .catch(err => toast.error("Lỗi tải danh sách Highlight: " + err.message));
+  };
+
 
   return (
     <div className={styles.container}>
@@ -96,17 +114,32 @@ export default function HighlightList({ isOwnProfile = true, userId }) {
           </div>
         </div>
       )}
-      {showModal && (
+
+      {/* Modal tạo mới */}
+      {showCreateModal && (
         <HighlightModal
-          highlight={editing}
-          onSave={(hl) => {
-            setHighlights([...highlights, hl]);
-            setShowModal(false);
+          onSave={() => {
+            handleHighlightSave(); // Gọi hàm xử lý sau khi tạo/sửa xong
+            setShowCreateModal(false);
           }}
-          onClose={() => setShowModal(false)}
+          onClose={() => setShowCreateModal(false)}
           userId={userId}
         />
       )}
+
+      {/* Modal chỉnh sửa */}
+      {showEditModal && (
+        <EditHighlightModal
+          highlightId={editingHighlightId} // Truyền ID của highlight cần chỉnh sửa
+          onSave={() => {
+            handleHighlightSave(); // Gọi hàm xử lý sau khi tạo/sửa xong
+            setShowEditModal(false);
+          }}
+          onClose={() => setShowEditModal(false)}
+          userId={userId}
+        />
+      )}
+
       {openHighlight && (
         <div
           className={styles.storyModalOverlay}

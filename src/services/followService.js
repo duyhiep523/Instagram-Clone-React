@@ -36,3 +36,19 @@ export async function getFollowersByUserId(userId) { // Đổi tên biến cho r
   }
   return response.data.data;
 }
+export async function getFollowingByUserId(userId) {
+  const token = localStorage.getItem("token");
+  const response = await axios.get(
+    `${BASE_API_URL}/follows/following`,
+    {
+      params: { userId },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  if (response.data.code !== 200) {
+    throw new Error(response.data.message || "Lấy danh sách người đang theo dõi thất bại");
+  }
+  return response.data.data;
+}

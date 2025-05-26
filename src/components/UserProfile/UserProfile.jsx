@@ -5,64 +5,59 @@ import UserProfileContent from "./UserProfileContent"; // Import nội dung bài
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { faTableCellsLarge } from "@fortawesome/free-solid-svg-icons";
-import { faBookmark } from "@fortawesome/free-regular-svg-icons"; // Sử dụng icon đánh dấu trang
-import { faUserTag } from "@fortawesome/free-solid-svg-icons"; // Sử dụng icon người được gắn thẻ
+import { faBookmark } from "@fortawesome/free-regular-svg-icons";
+import { faUserTag } from "@fortawesome/free-solid-svg-icons";
 import { Plus } from "react-feather";
 import HighlightList from "../Highlight/HighlightList";
 import FollowersModal from "../../Modal/FollowersModal/FollowersModal"; // Import modal followers
+import FollowingModal from "../../Modal/FollowingModal/FollowingModal"; // Import modal following MỚI
+
 // Import tất cả các hàm dịch vụ cần thiết
 import {
   getUserByUsername,
   getPostCountByUserId,
-  getFollowersCountByUserId, // Thêm import này
-  getFollowingCountByUserId, // Thêm import này
+  getFollowersCountByUserId,
+  getFollowingCountByUserId,
 } from "../../services/userService";
 
 function UserProfile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showFollowersModal, setShowFollowersModal] = useState(false); // State để điều khiển modal
-  // Loại bỏ state postCount riêng, vì nó sẽ được gộp vào đối tượng user.stats
-  const username = localStorage.getItem("username"); // Lấy username của người dùng hiện tại từ localStorage
+  const [showFollowersModal, setShowFollowersModal] = useState(false); // State để điều khiển modal Followers
+  const [showFollowingModal, setShowFollowingModal] = useState(false); // State MỚI để điều khiển modal Following
+
+  const username = localStorage.getItem("username");
 
   useEffect(() => {
-    // Nếu không có username trong localStorage, không thể tải thông tin profile
     if (!username) {
       setLoading(false);
       console.error(
         "Không tìm thấy username trong localStorage. Vui lòng đăng nhập."
       );
-      // Bạn có thể redirect người dùng đến trang đăng nhập ở đây
       return;
     }
 
-    setLoading(true); // Đặt trạng thái loading là true khi bắt đầu tải
+    setLoading(true);
 
-    // Tạo một hàm bất đồng bộ để fetch tất cả dữ liệu
     const fetchProfileData = async () => {
       try {
-        // Bước 1: Lấy thông tin người dùng cơ bản theo username
         const userData = await getUserByUsername(username);
 
-        // Kiểm tra xem dữ liệu người dùng và userId có hợp lệ không
         if (!userData || !userData.userId) {
           throw new Error("Không tìm thấy thông tin người dùng hoặc userId.");
         }
 
         const userId = userData.userId;
 
-        // Bước 2: Gọi đồng thời các API để lấy số lượng bài viết, người theo dõi, và đang theo dõi
         const [postsCount, followersCount, followingCount] = await Promise.all([
           getPostCountByUserId(userId),
-          getFollowersCountByUserId(userId), // Gọi API lấy số người theo dõi
-          getFollowingCountByUserId(userId), // Gọi API lấy số người đang theo dõi
+          getFollowersCountByUserId(userId),
+          getFollowingCountByUserId(userId),
         ]);
 
-        // Bước 3: Gộp tất cả dữ liệu đã lấy vào state 'user'
         setUser({
-          ...userData, // Giữ lại các thông tin user cơ bản (avatar, bio, v.v.)
+          ...userData,
           stats: {
-            // Thêm trường stats để chứa các số liệu thống kê
             posts: postsCount || 0,
             followers: followersCount || 0,
             following: followingCount || 0,
@@ -70,26 +65,31 @@ function UserProfile() {
         });
       } catch (err) {
         console.error("Lỗi khi tải thông tin hồ sơ:", err);
-        setUser(null); // Đặt user về null nếu có lỗi
+        setUser(null);
       } finally {
-        setLoading(false); // Dù thành công hay thất bại, cũng đặt loading về false
+        setLoading(false);
       }
     };
 
-    fetchProfileData(); // Gọi hàm fetch dữ liệu
-  }, [username]); // useEffect sẽ chạy lại khi username thay đổi (trong trường hợp này, username từ localStorage thường không đổi)
+    fetchProfileData();
+  }, [username]);
 
   // Hàm xử lý khi click vào số followers
   const handleFollowersClick = () => {
     setShowFollowersModal(true);
   };
 
-  // Hàm đóng modal
-  const handleCloseModal = () => {
-    setShowFollowersModal(false);
+  // Hàm xử lý khi click vào số following (MỚI)
+  const handleFollowingClick = () => {
+    setShowFollowingModal(true);
   };
 
-  // Hiển thị trạng thái tải hoặc lỗi
+  // Hàm đóng modal chung (có thể dùng chung cho cả hai modal nếu bạn muốn, hoặc tạo riêng)
+  const handleCloseModal = () => {
+    setShowFollowersModal(false);
+    setShowFollowingModal(false); // Đảm bảo đóng cả hai
+  };
+
   if (loading) {
     return (
       <div className="user-profile-header">
@@ -105,7 +105,6 @@ function UserProfile() {
     );
   }
 
-  // Lấy các số liệu từ user.stats để hiển thị, sử dụng toán tử ?? 0 để đảm bảo là số
   const displayPosts = user.stats?.posts ?? 0;
   const displayFollowers = user.stats?.followers ?? 0;
   const displayFollowing = user.stats?.following ?? 0;
@@ -159,12 +158,16 @@ function UserProfile() {
               <div
                 className="stat-item"
                 style={{ cursor: "pointer" }}
-                onClick={handleFollowersClick}
+                onClick={handleFollowersClick} // Mở modal Followers
               >
                 <span className="stat-number">{displayFollowers}</span>{" "}
                 <span className="text-grey">người theo dõi</span>
               </div>
-              <div className="stat-item">
+              <div
+                className="stat-item"
+                style={{ cursor: "pointer" }} // Thêm cursor: pointer cho click
+                onClick={handleFollowingClick} // Mở modal Following MỚI
+              >
                 <span className="text-grey">Đang theo dõi</span>{" "}
                 <span className="stat-number">{displayFollowing}</span>{" "}
                 <span className="text-grey">người dùng</span>
@@ -182,7 +185,6 @@ function UserProfile() {
         <HighlightList userId={user.userId} />
       </div>
 
-      {/* Phần điều hướng bài viết, đã lưu, được gắn thẻ */}
       <div className="profile-navigation">
         <div className="nav-item active">
           <p className="nav-icon">
@@ -205,7 +207,6 @@ function UserProfile() {
           <p>ĐƯỢC GẮN THẺ</p>
         </div>
       </div>
-      {/* Truyền userId của người dùng hiện tại xuống UserProfileContent */}
       <div className="list-post">
         <UserProfileContent userId={user.userId} />
       </div>
@@ -213,6 +214,12 @@ function UserProfile() {
       {/* Modal hiển thị danh sách followers */}
       <FollowersModal
         isOpen={showFollowersModal}
+        onClose={handleCloseModal}
+        userId={user.userId}
+      />
+      {/* Modal hiển thị danh sách đang theo dõi (MỚI) */}
+      <FollowingModal
+        isOpen={showFollowingModal}
         onClose={handleCloseModal}
         userId={user.userId}
       />
