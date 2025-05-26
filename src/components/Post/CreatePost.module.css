@@ -80,7 +80,7 @@
   padding: 10px 0;
 }
 .image-upload-label:hover {
-  border: 2px solid #e1306c;
+  border: 2px solid #6235f7;
 }
 .upload-placeholder {
   color: #999;
@@ -157,7 +157,7 @@
 }
 .preview-wrapper:hover {
   box-shadow: 0 4px 24px rgba(225,48,108,0.18);
-  border: 2px solid #e1306c;
+  border: 2px solid #5c30e1;
 }
 
 .preview-image-multi {
@@ -212,7 +212,7 @@
   border-bottom: 1.5px solid #e1306c;
 }
 .submit-btn {
-  background: linear-gradient(90deg, #e1306c 0%, #fdc468 100%);
+  background: linear-gradient(90deg, #8030e1 0%, #fdc468 100%);
   color: #fff;
   border: none;
   border-radius: 8px;

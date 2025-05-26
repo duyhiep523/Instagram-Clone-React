@@ -39,7 +39,7 @@ input {
   font-size: 15px;
 }
 input:focus {
-  border-color: #e1306c;
+  border-color: #3700ff;
 }
 .storiesList {
   display: flex;

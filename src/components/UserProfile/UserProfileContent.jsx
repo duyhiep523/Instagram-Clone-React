@@ -23,12 +23,13 @@ const ImageWithSkeleton = ({ src, alt }) => {
   );
 };
 
-const UserProfileContent = () => {
+const UserProfileContent = ({ userId: userIdProp }) => {
+  console.log(userIdProp);
   const [posts, setPosts] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [selectedPost, setSelectedPost] = React.useState(null);
   const PostModal = React.lazy(() => import('../../Modal/Post/PostModal'));
-  const userId = localStorage.getItem('userId');
+  const userId = userIdProp || localStorage.getItem('userId');
 
   React.useEffect(() => {
     async function fetchPosts() {
@@ -38,6 +39,7 @@ const UserProfileContent = () => {
         const data = await getPostsByUserId(userId);
         setPosts(data || []);
       } catch (e) {
+        console.error('Lấy bài viết thất bại', e);
         setPosts([]);
       } finally {
         setLoading(false);

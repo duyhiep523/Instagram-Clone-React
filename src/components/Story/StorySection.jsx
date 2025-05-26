@@ -1,46 +1,71 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Stories from "react-insta-stories";
-import "./StorySection.css"; // Đường dẫn đến file CSS của bạn
-const StorySection = () => {
-  const storiesData = [
-    {
-      content: () => (
-        <div style={{ width: "100%", height: "100%", position: "relative" }}>
-          <img
-            src="https://cdn.thuonggiaonline.vn/images/482dfd0421db0ab46c65f584701733dc9d94ba57943d49ad47cce99616522a66787fc51bae8e1849c40832d35dac6673fba0f2c2ef384fc8e2625fc06ca03b8afbb39e414ce2bd430f85da797baf343282483a3d85cac1fb103efeb555e8dd7f/cach-trang-diem-sieu-thuc-nhu-karina-aespa-0-1024x1280.jpg"
-            alt="story"
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-          <div className="story-header">
-            <img src="https://images2.thanhnien.vn/528068263637045248/2024/6/13/anh-2-1-17182895314862065415704.jpg" className="avatar" />
-            <div>
-              <div className="username">xooos_</div>
-              <div className="time">6 giờ</div>
-            </div>
-          </div>
-        </div>
-      ),
-    },
+import "./StorySection.css";
+import { getHighlightStoryDetail } from "../../services/highlightServices";
+import { toast } from "react-toastify";
 
-     {
-      content: () => (
-        <div style={{ width: "100%", height: "100%", position: "relative" }}>
-          <img
-            src="https://cdn.thuonggiaonline.vn/images/482dfd0421db0ab46c65f584701733dc9d94ba57943d49ad47cce99616522a66787fc51bae8e1849c40832d35dac6673fba0f2c2ef384fc8e2625fc06ca03b8afbb39e414ce2bd430f85da797baf343282483a3d85cac1fb103efeb555e8dd7f/cach-trang-diem-sieu-thuc-nhu-karina-aespa-0-1024x1280.jpg"
-            alt="story"
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
-          />
-          <div className="story-header">
-            <img src="https://images2.thanhnien.vn/528068263637045248/2024/6/13/anh-2-1-17182895314862065415704.jpg" className="avatar" />
-            <div>
-              <div className="username">xooos_</div>
-              <div className="time">6 giờ</div>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-  ];
+const StorySection = ({ userId, storyId }) => {
+   console.log("StorySection mounted");
+  
+  const [storiesData, setStoriesData] = useState([null]);
+
+  useEffect(() => {
+   
+    
+    async function fetchDetail() {
+      try {
+        const data = await getHighlightStoryDetail(userId, storyId);
+        if (
+          data &&
+          Array.isArray(data.imageUrls) &&
+          data.imageUrls.length > 0
+        ) {
+          const storiesArr = data.imageUrls
+            .filter((url) => typeof url === "string" && url.trim() !== "")
+            .map((url) => ({
+              content: () => (
+                <div
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    position: "relative",
+                  }}
+                >
+                  <img
+                    src={url}
+                    alt="story"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <div className="story-header">
+                    <img src={data.avatarUrl} className="avatar" alt="avatar" />
+                    <div>
+                      <div className="username">{data.username}</div>
+                      <div className="time">
+                        {/* Thời gian có thể format ở đây */}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ),
+            }))
+            .filter((story) => typeof story.content === "function"); // Đảm bảo content là function
+
+          setStoriesData(storiesArr.length > 0 ? storiesArr : []);
+        } else {
+          setStoriesData([]);
+        }
+      } catch (err) {
+        toast.error("Không thể tải chi tiết highlight: " + err.message);
+        setStoriesData([]);
+      }
+    }
+    if (userId && storyId) fetchDetail();
+    else setStoriesData([]);
+  }, [userId, storyId]);
 
   const storyStyles = {
     width: "100%",
@@ -54,16 +79,13 @@ const StorySection = () => {
     <div className="story-viewer-container">
       <Stories
         stories={storiesData}
-        loop={true}
+        loop
         keyboardNavigation
         defaultInterval={5000}
         width="100%"
         height="100%"
         loader
         style={storyStyles}
-        onStoryEnd={(s, st) => console.log("story ended", s, st)}
-        onAllStoriesEnd={(s, st) => console.log("all stories ended", s, st)}
-        onStoryStart={(s, st) => console.log("story started", s, st)}
       />
     </div>
   );

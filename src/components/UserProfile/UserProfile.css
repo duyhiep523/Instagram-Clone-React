@@ -1,7 +1,8 @@
-*{
+* {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  
 }
 .user-profile-header {
   width: 800px;
@@ -34,7 +35,7 @@
   display: flex;
   align-items: center;
 }
-.username-row-item .username{
+.username-row-item .username {
   font-size: 20px;
   font-weight: 600;
   color: #fff;
@@ -77,9 +78,9 @@
 }
 .highlight-container {
   width: 100%;
- display: flex;
- justify-content: start;
- gap: 10px;
+  display: flex;
+  justify-content: start;
+  gap: 10px;
 }
 .highlight-add {
   width: 80px;
@@ -91,9 +92,9 @@
   color: #ffffff;
   text-align: center;
 }
-.highlight-add-label p{
+.highlight-add-label p {
   font-size: 16px;
- font-weight: 400;
+  font-weight: 400;
 }
 .highlight-add-icon {
   width: 80px;
@@ -140,16 +141,15 @@
 
 .nav-icon {
   width: 24px;
-  height: 24px; 
+  height: 24px;
   margin-bottom: 5px;
-  display: flex; 
+  display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 16px; 
+  font-size: 16px;
   opacity: 0.7;
 }
 
 .nav-item.active .nav-icon {
   opacity: 1;
 }
-

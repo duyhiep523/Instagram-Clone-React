@@ -1,20 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import "./NotificationPanel.css";
-
-// Demo data
-const MOCK_REQUESTS = [
-  { username: "renacademy.vn", name: "Yêu cầu theo dõi", avatar: "https://i.pravatar.cc/150?img=11" },
-];
-const MOCK_NOTIFICATIONS = [
-  { id: 1, content: "duchy0605 đã bắt đầu theo dõi bạn.", avatar: "https://i.pravatar.cc/150?img=12", time: "3 ngày" },
-  { id: 2, content: "nanie_ntn đã nhắc đến bạn trong bình luận", avatar: "https://i.pravatar.cc/150?img=13", time: "8 tuần" },
-  { id: 3, content: "miu.qnh đã thích bình luận của bạn", avatar: "https://i.pravatar.cc/150?img=14", time: "8 tuần" },
-];
-
+import { getFollowersNotFollowedBack } from "../../services/followService";
+import { followUser } from "../../services/userService";
+import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 function NotificationPanel({ onClose }) {
   const panelRef = useRef();
   const [showRequests, setShowRequests] = useState(false);
+  const [requests, setRequests] = useState([]);
+  const [loadingRequests, setLoadingRequests] = useState(true);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -26,55 +21,103 @@ function NotificationPanel({ onClose }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return;
+    setLoadingRequests(true);
+    getFollowersNotFollowedBack(userId)
+      .then((data) => setRequests(data))
+      .catch(() => setRequests([]))
+      .finally(() => setLoadingRequests(false));
+  }, []);
+
+  const handleAccept = async (user) => {
+    const currentUserId = localStorage.getItem("userId");
+    try {
+      await followUser(currentUserId, user.userId);
+      toast.success(`Đã theo dõi ${user.username}`);
+      setRequests((prev) => prev.filter((u) => u.userId !== user.userId));
+    } catch (err) {
+      toast.error("Theo dõi thất bại!", err.message);
+    }
+  };
+
   return (
     <div className="notification-panel slide-in" ref={panelRef}>
       <div className="notification-header">
         <h2>Thông báo</h2>
-        <button className="close-btn" onClick={onClose}><FaTimes /></button>
+        <button className="close-btn" onClick={onClose}>
+          <FaTimes />
+        </button>
       </div>
       <div className="notification-section follow-request">
-        <div className="section-title follow-request-title" onClick={() => setShowRequests(open => !open)} style={{cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div
+          className="section-title follow-request-title"
+          onClick={() => setShowRequests((open) => !open)}
+          style={{
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <span>Yêu cầu theo dõi</span>
-          <span style={{fontWeight:600,color:'#3897f0',marginLeft:8}}>{MOCK_REQUESTS.length > 0 ? MOCK_REQUESTS.length : ''} người </span>
-          <span style={{marginLeft:10,transition:'transform 0.2s',transform: showRequests ? 'rotate(90deg)' : 'rotate(0deg)'}}>▶</span>
+          <span style={{ fontWeight: 600, color: "#3897f0", marginLeft: 8 }}>
+            {requests.length > 0 ? requests.length : ""} người
+          </span>
+          <span
+            style={{
+              marginLeft: 10,
+              transition: "transform 0.2s",
+              transform: showRequests ? "rotate(90deg)" : "rotate(0deg)",
+            }}
+          >
+            ▶
+          </span>
         </div>
-        {showRequests && (
-          MOCK_REQUESTS.length === 0 ? (
+        {showRequests &&
+          (loadingRequests ? (
+            <div className="notification-empty">Đang tải...</div>
+          ) : requests.length === 0 ? (
             <div className="notification-empty">Không có yêu cầu nào.</div>
           ) : (
             <ul className="notification-list">
-              {MOCK_REQUESTS.map(user => (
-                <li key={user.username} className="notification-list-item follow-request-item">
-                  <img src={user.avatar} alt={user.username} className="notification-avatar" />
+              {requests.map((user) => (
+                <li
+                  key={user.userId}
+                  className="notification-list-item follow-request-item"
+                >
+                  <img
+                    src={user.profilePictureUrl}
+                    alt={user.username}
+                    className="notification-avatar"
+                  />
                   <div className="notification-user-info">
-                    <span className="notification-username">{user.username}</span>
-                    <span className="notification-name">{user.name}</span>
+                    <span className="notification-username">
+                      <Link
+                        to={`/user/${user.username}`}
+                        style={{ color: "inherit", textDecoration: "none" }}
+                      >
+                        {user.username}
+                      </Link>
+                    </span>
+                    <span className="notification-name">{user.fullName}</span>
                   </div>
-                  <button className="accept-btn">Chấp nhận</button>
+                  <button
+                    className="accept-btn"
+                    onClick={() => handleAccept(user)}
+                  >
+                    Chấp nhận
+                  </button>
                   <button className="decline-btn">Từ chối</button>
                 </li>
               ))}
             </ul>
-          )
-        )}
+          ))}
       </div>
       <div className="notification-section normal">
         <div className="section-title">Tuần này</div>
-        {MOCK_NOTIFICATIONS.length === 0 ? (
-          <div className="notification-empty">Không có thông báo nào.</div>
-        ) : (
-          <ul className="notification-list">
-            {MOCK_NOTIFICATIONS.map(noti => (
-              <li key={noti.id} className="notification-list-item">
-                <img src={noti.avatar} alt="avatar" className="notification-avatar" />
-                <div className="notification-content">
-                  <span>{noti.content}</span>
-                  <span className="notification-time">{noti.time}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
+        <div className="notification-empty">Không có thông báo nào.</div>
       </div>
     </div>
   );

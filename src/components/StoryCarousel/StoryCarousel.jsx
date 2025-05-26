@@ -278,7 +278,7 @@ const StoryCarousel = () => {
     justifyContent: 'center',
     width: 66,
     height: 66,
-    background: '#0095f6',
+    background: '#000000',
     color: '#fff',
     borderRadius: '50%',
     fontSize: 44,
